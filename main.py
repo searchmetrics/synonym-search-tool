@@ -1,8 +1,9 @@
 import requests
 from json import JSONDecodeError
+import secret_data
 
 
-def _get_access_token(key, secret):
+def get_access_token(key, secret):
     get_access_token_url = "https://api.searchmetrics.com/v4/token"
     r = requests.post(
         url=get_access_token_url,
@@ -20,10 +21,21 @@ def _get_access_token(key, secret):
         )
 
 
+def get_keyword_info(keyword, country_code="us"):
+    get_keyword_info_url = "https://api.searchmetrics.com/v4/ResearchKeywordsGetListKeywordinfo.json"
+    request_params = {
+        "keyword": keyword,
+        "countrycode": country_code,
+        "access_token": get_access_token(secret_data.SM_API_KEY, secret_data.SM_API_SECRET),
+    }
+    r = requests.get(get_keyword_info_url, params=request_params)
+    return r.json()["response"]
+
+
 def main():
-    pass
+    info = get_keyword_info("metallica")
+    print(info)
 
 
 if __name__ == "__main__":
     main()
-
