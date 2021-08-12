@@ -53,12 +53,15 @@ def get_words_count(word_list):
     return words_count
 
 
+def sort_dict(x, reverse=True):
+    return {k: v for k, v in sorted(x.items(), key=lambda item: item[1], reverse=reverse)}
+
 
 def main():
     file_name = "sample.xlsx"
     xlsx_file = pd.read_excel(file_name)
     phrases = xlsx_file["phrase"]
-    print(get_words_count(get_words(phrases)))
+    print(sort_dict(get_words_count(get_words(phrases))))
 
 
 if __name__ == "__main__":
