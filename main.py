@@ -32,8 +32,12 @@ def get_keyword_info(keyword, country_code="us"):
     return r.json()["response"]
 
 
+def get_keyword_search_volume(keyword, country_code="us"):
+    return get_keyword_info(keyword)[0]["search_volume"]
+
+
 def main():
-    info = get_keyword_info("metallica")
+    info = get_keyword_search_volume("metallica")
     print(info)
 
 
