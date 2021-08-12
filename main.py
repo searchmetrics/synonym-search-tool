@@ -43,11 +43,22 @@ def get_words(column):
     return words
 
 
+def get_words_count(word_list):
+    words_count = {}
+    for word in word_list:
+        if word in words_count:
+            words_count[word] += 1
+        else:
+            words_count[word] = 1
+    return words_count
+
+
+
 def main():
     file_name = "sample.xlsx"
     xlsx_file = pd.read_excel(file_name)
     phrases = xlsx_file["phrase"]
-    print(get_words(phrases))
+    print(get_words_count(get_words(phrases)))
 
 
 if __name__ == "__main__":
