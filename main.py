@@ -1,7 +1,8 @@
-import requests
-from json import JSONDecodeError
-import secret_data
+# import requests
+# from json import JSONDecodeError
+# import secret_data
 import pandas as pd
+import csv
 
 
 # def get_access_token(key, secret):
@@ -43,9 +44,14 @@ def get_words(column):
     return words
 
 
-def get_words_count(word_list):
+def get_words_count(word_list, spam=None):
+    if spam is None:
+        spam = "& , ( )"
+
     words_count = {}
     for word in word_list:
+        if word in spam:
+            continue
         if word in words_count:
             words_count[word] += 1
         else:
@@ -57,11 +63,17 @@ def sort_dict(x, reverse=True):
     return {k: v for k, v in sorted(x.items(), key=lambda item: item[1], reverse=reverse)}
 
 
+def create_csv_file(file_name, dictionary, element_count=30):
+    with open(file_name, 'w') as f:
+        for key in list(dictionary.keys())[:element_count]:
+            f.write("%s,%s\n" % (key, dictionary[key]))
+
+
 def main():
     file_name = "sample.xlsx"
     xlsx_file = pd.read_excel(file_name)
     phrases = xlsx_file["phrase"]
-    print(sort_dict(get_words_count(get_words(phrases))))
+    create_csv_file("sample.csv", sort_dict(get_words_count(get_words(phrases))))
 
 
 if __name__ == "__main__":
