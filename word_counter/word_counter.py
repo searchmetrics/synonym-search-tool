@@ -69,10 +69,10 @@ def create_csv_file(file_name, dictionary, element_count=30):
 
 
 def main():
-    file_name = "sample.xlsx"
+    file_name = "sample_input_counter.xlsx"
     xlsx_file = pd.read_excel(file_name)
     phrases = xlsx_file["phrase"]
-    create_csv_file("sample.csv", sort_dict(get_words_count(get_words(phrases))))
+    create_csv_file("sample_output_counter.csv", sort_dict(get_words_count(get_words(phrases))))
 
 
 if __name__ == "__main__":
