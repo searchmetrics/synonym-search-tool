@@ -2,7 +2,6 @@
 # from json import JSONDecodeError
 # import secret_data
 import pandas as pd
-import csv
 
 
 # def get_access_token(key, secret):
