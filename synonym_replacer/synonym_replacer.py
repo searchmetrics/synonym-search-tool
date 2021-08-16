@@ -1,9 +1,10 @@
-import pprint
 from json import JSONDecodeError
 import requests
 import pandas as pd
 from itertools import product
 from re import findall
+
+from numpy import array
 
 import secret_data
 
@@ -38,7 +39,11 @@ def get_keyword_info(keyword, country_code="us"):
 
 
 def get_keyword_search_volume(keyword, country_code="us"):
-    return get_keyword_info(keyword, country_code)[0]["search_volume"]
+    try:
+        return get_keyword_info(keyword, country_code)[0]["search_volume"]
+    except Exception as e:
+        print(e, "for", f"'{keyword}'")
+        return 0
 
 
 def get_column_set(dataframe, keyword):
@@ -74,7 +79,6 @@ def get_synonymic_phrases(phrase, word_synonyms):
 
     for i in product(*occurring_word_synonyms):
         synonymic_phrases.append(phrase.format(*i))
-    # print(synonymic_phrases)
     return synonymic_phrases
 
 
@@ -84,11 +88,13 @@ def main():
     phrases = get_column_set(phrases_file, "phrase")
     words = get_column_set(synonyms_file, "Words")
 
-    phrases_with_keywords = set()
+    phrases_with_keywords = []
     for word in words:
         for phrase in phrases:
-            if isinstance(word, str) and word in phrase:
-                phrases_with_keywords.add(phrase)
+            if len(phrases_with_keywords) == 20:
+                break
+            if isinstance(word, str) and word in findall(r'\w+', phrase):
+                phrases_with_keywords.append(phrase)
 
     word_synonyms = get_word_synonyms(pd.read_csv("sample_input_synonym_replacer.csv", index_col=0, squeeze=False))
 
@@ -96,7 +102,20 @@ def main():
     for phrase in phrases_with_keywords:
         synonymic_phrases.append(get_synonymic_phrases(phrase, word_synonyms))
 
-    pprint.pprint(synonymic_phrases)
+    synonymic_phrases.sort(key=len, reverse=True)
+    max_synonymic_phrase_count = len(synonymic_phrases[0])
+
+    synonymic_phrases = [list(i) for i in set(map(tuple, synonymic_phrases))]
+    synonymic_phrases = [phrase + [''] * (max_synonymic_phrase_count - len(phrase)) for phrase in synonymic_phrases]
+
+    export_df = pd.DataFrame({})
+
+    for i in range(max_synonymic_phrase_count):
+        temp = list(array(synonymic_phrases)[:, i])
+        export_df[f"Phrase_{i}"] = temp
+        export_df[f"Phrase_{i}_Search_Volume"] = [get_keyword_search_volume(x) for x in list(temp)]
+
+    export_df.to_csv(path_or_buf="sample.csv", index=False)
 
 
 if __name__ == "__main__":
