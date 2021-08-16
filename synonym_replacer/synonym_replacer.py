@@ -1,6 +1,8 @@
 from json import JSONDecodeError
 import requests
 import pandas as pd
+from itertools import product
+from re import findall
 
 import secret_data
 
@@ -61,8 +63,19 @@ def get_word_synonyms(df):
 
 
 def get_synonymic_phrases(phrase, word_synonyms):
+    occurring_word_synonyms = []
     synonymic_phrases = []
+    for word in findall(r'\w+', phrase):
+        for word_synonym in word_synonyms:
+            if word in word_synonym:
+                phrase = phrase.replace(word, "{}", 1)
+                occurring_word_synonyms.append(word_synonym)
+                print(phrase, word)
 
+    for i in product(*occurring_word_synonyms):
+        synonymic_phrases.append(phrase.format(*i))
+
+    return synonymic_phrases
 
 
 def main():
@@ -78,10 +91,10 @@ def main():
                 phrases_with_keywords.add(phrase)
 
     word_synonyms = get_word_synonyms(pd.read_csv("sample_input_synonym_replacer.csv", index_col=0, squeeze=False))
-    print(word_synonyms)
+
     synonymic_phrases = []
-    # for phrase in phrases_with_keywords:
-    #     synonymic_phrases.append(get_synonymic_phrases(phrase, word_synonyms))
+    for phrase in phrases_with_keywords:
+        synonymic_phrases.append(get_synonymic_phrases(phrase, word_synonyms))
 
 
 if __name__ == "__main__":
