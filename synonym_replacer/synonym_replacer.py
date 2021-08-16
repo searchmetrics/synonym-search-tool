@@ -1,6 +1,4 @@
 from json import JSONDecodeError
-
-import numpy as np
 import requests
 import pandas as pd
 
@@ -59,12 +57,12 @@ def get_word_synonyms(df):
                 word_synonyms[nested_key] += [temp_dict[nested_key].lower()]
             else:
                 word_synonyms[nested_key] = [temp_dict[nested_key].lower()]
-    return word_synonyms
+    return [[x] + word_synonyms[x] for x in word_synonyms]
 
 
-# def get_synonymic_phrases(phrase, synonyms_file):
-#     synonymic_phrases = []
-#     for 1
+def get_synonymic_phrases(phrase, word_synonyms):
+    synonymic_phrases = []
+
 
 
 def main():
@@ -79,12 +77,11 @@ def main():
             if isinstance(word, str) and word in phrase:
                 phrases_with_keywords.add(phrase)
 
+    word_synonyms = get_word_synonyms(pd.read_csv("sample_input_synonym_replacer.csv", index_col=0, squeeze=False))
+    print(word_synonyms)
     synonymic_phrases = []
     # for phrase in phrases_with_keywords:
-    #     synonymic_phrases.append(get_synonymic_phrases(phrase, synonyms_file))
-
-    temp = get_word_synonyms(pd.read_csv("sample_input_synonym_replacer.csv", index_col=0, squeeze=False))
-    print(temp)
+    #     synonymic_phrases.append(get_synonymic_phrases(phrase, word_synonyms))
 
 
 if __name__ == "__main__":
