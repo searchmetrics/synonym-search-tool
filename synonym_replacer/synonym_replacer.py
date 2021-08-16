@@ -1,3 +1,4 @@
+import pprint
 from json import JSONDecodeError
 import requests
 import pandas as pd
@@ -67,14 +68,13 @@ def get_synonymic_phrases(phrase, word_synonyms):
     synonymic_phrases = []
     for word in findall(r'\w+', phrase):
         for word_synonym in word_synonyms:
-            if word in word_synonym:
+            if word in word_synonym and word in phrase:
                 phrase = phrase.replace(word, "{}", 1)
                 occurring_word_synonyms.append(word_synonym)
-                print(phrase, word)
 
     for i in product(*occurring_word_synonyms):
         synonymic_phrases.append(phrase.format(*i))
-
+    # print(synonymic_phrases)
     return synonymic_phrases
 
 
@@ -95,6 +95,8 @@ def main():
     synonymic_phrases = []
     for phrase in phrases_with_keywords:
         synonymic_phrases.append(get_synonymic_phrases(phrase, word_synonyms))
+
+    pprint.pprint(synonymic_phrases)
 
 
 if __name__ == "__main__":
